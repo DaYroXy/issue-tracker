@@ -1,5 +1,9 @@
+import IssueStatusBadge from "@/app/componenets/IssueStatusBadge";
 import prisma from "@/prisma/client"
+import { Card, Flex, Heading, Text } from "@radix-ui/themes";
+import { toggleHeading1 } from "easymde";
 import { notFound } from "next/navigation";
+import ReactMarkdown from 'react-markdown'
 
 interface Props {
     params: { id: string }
@@ -7,7 +11,7 @@ interface Props {
 
 const IssueDetailPage = async ({ params }: Props) => {
 
-    if(typeof params.id != 'number') notFound()
+    if(isNaN(parseInt(params.id))) notFound()
 
     const issue = await prisma.issue.findUnique({
         where: {
@@ -21,10 +25,15 @@ const IssueDetailPage = async ({ params }: Props) => {
 
     return (
         <div>
-            <p>{issue.title}</p>
-            <p>{issue.description}</p>
-            <p>{issue.status}</p>
-            <p>{issue.createdAt.toDateString()}</p>
+            <Heading>{issue.title}</Heading>
+
+            <Flex gap={"3"} my="2">
+                <IssueStatusBadge status={issue.status} />
+                <Text>{issue.createdAt.toDateString()}</Text>
+            </Flex>
+            <Card className="prose">
+                <ReactMarkdown >{issue.description}</ReactMarkdown>
+            </Card>
         </div>
     )
 }
