@@ -5,6 +5,9 @@ import { AiFillBug } from "react-icons/ai"
 import classnames from "classnames";
 import { useSession } from "next-auth/react"
 import { Avatar, Box, DropdownMenu, Flex, Text } from "@radix-ui/themes";
+import Skeleton from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css'
+
 
 const NavBar = () => {
 
@@ -38,6 +41,10 @@ const NavBar = () => {
                     </ul>
                 </Flex>
                 <Box>
+                    {status === 'loading' &&
+                        <Skeleton width="3rem" />
+                    }
+
                     {status === 'authenticated' && (
                         <DropdownMenu.Root>
                             <DropdownMenu.Trigger>
