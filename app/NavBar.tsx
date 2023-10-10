@@ -4,7 +4,7 @@ import Link from "next/link"
 import { AiFillBug } from "react-icons/ai"
 import classnames from "classnames";
 import { useSession } from "next-auth/react"
-import { Box } from "@radix-ui/themes";
+import { Avatar, Box, DropdownMenu, Flex, Text } from "@radix-ui/themes";
 
 const NavBar = () => {
 
@@ -17,27 +17,48 @@ const NavBar = () => {
     ]
 
     return (
-        <nav className="flex space-x-6 border-b mb-5 px-5 h-14 items-center">
-            <Link href="/"><AiFillBug /></Link>
-            <ul className="flex space-x-6">
-                {links.map(({ label, href }, index) => (
-                    <li key={index}>
-                        <Link 
-                            href={href}
-                            className={classnames({
-                                'text-zinc-900': href === currentPath,
-                                'text-zinc-500': href != currentPath,
-                                'hover:text-zinc-800 transition-colors': true
-                            })}>
-                            {label}
-                        </Link>
-                    </li>
-                ))}
-            </ul>
-            <Box>
-                {status === 'authenticated' && <Link href="/api/auth/signout">Log out</Link>}
-                {status === 'unauthenticated' && <Link href="/api/auth/signin">Login</Link>}
-            </Box>
+        <nav className="border-b mb-5 px-5 py-3">
+            <Flex justify="between">
+                <Flex align="center" gap="3">
+                    <Link href="/"><AiFillBug /></Link>
+                    <ul className="flex space-x-6">
+                        {links.map(({ label, href }, index) => (
+                            <li key={index}>
+                                <Link
+                                    href={href}
+                                    className={classnames({
+                                        'text-zinc-900': href === currentPath,
+                                        'text-zinc-500': href != currentPath,
+                                        'hover:text-zinc-800 transition-colors': true
+                                    })}>
+                                    {label}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </Flex>
+                <Box>
+                    {status === 'authenticated' && (
+                        <DropdownMenu.Root>
+                            <DropdownMenu.Trigger>
+                                <Avatar className="cursor-pointer" size="2" radius="full" src={session.user!.image!} fallback="?" />
+                            </DropdownMenu.Trigger>
+                            <DropdownMenu.Content>
+                                <DropdownMenu.Label>
+                                    <Text size="2">{session.user!.name}</Text>
+                                </DropdownMenu.Label>
+                                <DropdownMenu.Item>
+                                    <Link href="/api/auth/signout">Log out</Link>
+                                </DropdownMenu.Item>
+                            </DropdownMenu.Content>
+                        </DropdownMenu.Root>
+                        // <Link href="/api/auth/signout">Log out</Link>
+                    )}
+                    {status === 'unauthenticated' && <Link href="/api/auth/signin">Login</Link>}
+                </Box>
+            </Flex>
+
+
         </nav>
     )
 }
