@@ -8,8 +8,8 @@ interface Props {
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
 
-
     const body = await request.json()
+    console.log(body)
     const validation = createIssueSchema.safeParse(body)
     if (!validation.success)
         return NextResponse.json(validation.error.format(), { status: 400 })
