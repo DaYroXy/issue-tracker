@@ -3,10 +3,13 @@ import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { AiFillBug } from "react-icons/ai"
 import classnames from "classnames";
+import { useSession } from "next-auth/react"
+import { Box } from "@radix-ui/themes";
 
 const NavBar = () => {
 
     const currentPath = usePathname();
+    const { status, data: session } = useSession()
 
     const links = [
         { label: "Dashboard", href: "/" },
@@ -18,18 +21,23 @@ const NavBar = () => {
             <Link href="/"><AiFillBug /></Link>
             <ul className="flex space-x-6">
                 {links.map(({ label, href }, index) => (
-                    <Link 
-                        key={index}
-                        href={href}
-                        className={classnames({
-                            'text-zinc-900': href === currentPath,
-                            'text-zinc-500': href != currentPath,
-                            'hover:text-zinc-800 transition-colors': true
-                        })}>
-                        {label}
-                    </Link>
+                    <li key={index}>
+                        <Link 
+                            href={href}
+                            className={classnames({
+                                'text-zinc-900': href === currentPath,
+                                'text-zinc-500': href != currentPath,
+                                'hover:text-zinc-800 transition-colors': true
+                            })}>
+                            {label}
+                        </Link>
+                    </li>
                 ))}
             </ul>
+            <Box>
+                {status === 'authenticated' && <Link href="/api/auth/signout">Log out</Link>}
+                {status === 'unauthenticated' && <Link href="/api/auth/signin">Login</Link>}
+            </Box>
         </nav>
     )
 }
