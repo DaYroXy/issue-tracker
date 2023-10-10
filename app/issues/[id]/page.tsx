@@ -7,12 +7,16 @@ import ReactMarkdown from 'react-markdown';
 import { Pencil2Icon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import DeleteIssueButton from "./DeleteIssueButton";
+import { getServerSession } from "next-auth";
+import authOptions from "@/app/auth/AuthOptions";
 
 interface Props {
     params: { id: string }
 }
 
 const IssueDetailPage = async ({ params }: Props) => {
+
+    const session = await getServerSession(authOptions)
 
     // await delay(2000)
     if (isNaN(parseInt(params.id))) notFound()
@@ -40,16 +44,18 @@ const IssueDetailPage = async ({ params }: Props) => {
                     <ReactMarkdown >{issue.description}</ReactMarkdown>
                 </Card>
             </Box>
-            <Box>
-                <Flex direction="column" gap="4">
-                    <Button>
-                        <Pencil2Icon />
-                        <Link href={`/issues/${issue.id}/edit`}>Edit Issues</Link>
-                    </Button>
+            {session &&
+                <Box>
+                    <Flex direction="column" gap="4">
+                        <Button>
+                            <Pencil2Icon />
+                            <Link href={`/issues/${issue.id}/edit`}>Edit Issues</Link>
+                        </Button>
 
-                    <DeleteIssueButton issueId={issue.id} />
-                </Flex>
-            </Box>
+                        <DeleteIssueButton issueId={issue.id} />
+                    </Flex>
+                </Box>
+            }
         </Grid>
     )
 }
