@@ -16,11 +16,17 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     const body = await request.json()
     const validation = patchIssueSchema.safeParse(body)
 
-    const { assignedToUserId, title, description } = body
+    let { assignedToUserId, title, description } = body
+
     if (assignedToUserId) {
-        const user = await prisma.user.findUnique({ where: { id: assignedToUserId } })
-        if (!user)
-            return NextResponse.json({ error: "Invalid user." }, { status: 400 });
+        if(assignedToUserId === "Unassigned") {
+            assignedToUserId = null
+        } else {
+            const user = await prisma.user.findUnique({ where: { id: assignedToUserId } })
+            if (!user)
+                return NextResponse.json({ error: "Invalid user." }, { status: 400 });
+        }
+
     }
 
     if (!validation.success)
@@ -30,7 +36,6 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         where: { id: parseInt(params.id) }
     });
 
-    console.log(issue)
     if (!issue) return NextResponse.json({ error: 'Invalid issue' }, { status: 404 })
     
     const updatedIssue = await prisma.issue.update({
@@ -41,6 +46,8 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
             assignedToUserId
         }
     })
+
+    console.log(updatedIssue)
 
     return NextResponse.json(updatedIssue)
 }
