@@ -1,7 +1,9 @@
+import Pagination from "./componenets/Pagination";
+
 export default function Home() {
   return (
     <div>
-      Hello World
+      <Pagination itemCount={100} pageSize={10} currentPage={10} />
     </div>
   )
 }
