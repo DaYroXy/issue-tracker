@@ -4,11 +4,23 @@ import Link from "next/link"
 import IssueStatusBadge from "../componenets/IssueStatusBadge";
 import delay from "delay";
 import IssueActions from "./IssueActions";
+import { Status } from "@prisma/client";
 
-const IssuesPage = async () => {
 
-  const issues = await prisma.issue.findMany();
-  // await delay(2000);
+interface Props {
+  searchParams: { status: Status }
+}
+
+
+const IssuesPage = async ({ searchParams }: Props) => {
+
+
+  const statuses = Object.values(Status);
+  const status = statuses.includes(searchParams.status) ? searchParams.status : undefined
+
+  const issues = await prisma.issue.findMany({
+    where: { status: status }
+  });
 
   return (
     <div>
@@ -22,7 +34,7 @@ const IssuesPage = async () => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {issues.map(({id, title, status, createdAt}) => (
+          {issues.map(({ id, title, status, createdAt }) => (
             <Table.Row key={id}>
               <Table.Cell>
                 <Link href={`/issues/${id}`}>{title}</Link>
