@@ -19,7 +19,6 @@ const AssigneeSelect = ({ issue }: { issue: Issue }) => {
     });
 
     if (isLoading) return <Skeleton />
-
     if (error) return null;
 
     return (
